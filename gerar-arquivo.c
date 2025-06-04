@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
   if (argc < 4)
   {
     printf("Uso incorreto. Voce deve fornecer o intervalo de tempo e pelo menos um sensor.\n");
-    printf("Formato: %s <data_hora_inicial> <data_hora_final> <NOME_DO_SENSOR>:<tipo do dado> [NOME_DO_SENSOR>:<tipo do dado] ...\n", argv[0]);
+    printf("Formato: %s <data_hora_inicial> <data_hora_final> <NOME_DO_SENSOR>:<tipo do dado> [...]\n", argv[0]);
     return EXIT_FAILURE;
   }
 
@@ -28,6 +28,21 @@ int main(int argc, char *argv[])
   if (quant_sensores > MAX_SENSORES)
   {
     printf("Número máximo de sensores permitidos: %d.\n", MAX_SENSORES);
+    return EXIT_FAILURE;
+  }
+
+  char sensores[MAX_SENSORES][NOME_MAX_SENSOR];
+  char tipos[MAX_SENSORES][NOME_MAX_TIPO];
+
+  for (int i = 0; i < quant_sensores; i++)
+  {
+    separar_sensor_tipo(argv[i + 3], sensores[i], tipos[i]);
+  }
+
+  FILE *file = fopen("txt/arquivo-teste.txt", "w");
+  if (file == NULL)
+  {
+    perror("Erro ao criar arquivo de saída");
     return EXIT_FAILURE;
   }
 
@@ -42,29 +57,19 @@ int main(int argc, char *argv[])
 
   for (int i = 0; i < quant_sensores; i++)
   {
-
-    char sensor[NOME_MAX_SENSOR];
-    char tipo[NOME_MAX_TIPO];
-    char nome_arquivo[30];
-
-    separar_sensor_tipo(argv[i + 3], sensor, tipo);
-    snprintf(nome_arquivo, sizeof(nome_arquivo), "txt/%s.txt", sensor);
-
-    FILE *file = fopen(nome_arquivo, "w");
-    if (file == NULL)
-    {
-      perror("Erro ao abrir o arquivo");
-      return EXIT_FAILURE;
-    }
+    const char *sensor = sensores[i];
+    const char *tipo = tipos[i];
 
     for (int j = 0; j < QUANTIDADE_LEITURAS; j++)
     {
-      time_t timestamp_aleatorio = gerar_timestamp_aleatorio(ts_inicio, ts_fim);
+      time_t timestamp = gerar_timestamp_aleatorio(ts_inicio, ts_fim);
       double valor = gerar_valor_aleatorio(tipo);
-      imprimir_leitura(file, timestamp_aleatorio, sensor, tipo, valor);
+      imprimir_leitura(file, timestamp, sensor, tipo, valor);
     }
-    fclose(file);
   }
+
+  fclose(file);
+  printf("Arquivo \"arquivo-teste.txt\" gerado com sucesso.\n");
   return EXIT_SUCCESS;
 }
 
