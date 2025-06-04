@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     char nome_arquivo[30];
 
     separar_sensor_tipo(argv[i + 3], sensor, tipo);
-    snprintf(nome_arquivo, sizeof(nome_arquivo), "%s.txt", sensor);
+    snprintf(nome_arquivo, sizeof(nome_arquivo), "txt/%s.txt", sensor);
 
     FILE *file = fopen(nome_arquivo, "w");
     if (file == NULL)
