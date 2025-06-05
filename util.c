@@ -12,7 +12,7 @@ time_t converter_para_timestamp(const char *data_hora)
 
   if (sscanf(data_hora, "%d-%d-%dT%d:%d:%d", &ano, &mes, &dia, &hora, &min, &seg) != 6)
   {
-    printf("Formato de data/hora inválido. Use YYYY-MM-DDTHH:MM:SS\n");
+    printf("Formato de data/hora invalido. Use YYYY-MM-DDTHH:MM:SS\n");
     return (time_t)-1;
   }
   t.tm_year = ano - 1900;
