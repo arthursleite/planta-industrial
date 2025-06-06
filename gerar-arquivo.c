@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "util.h"
 
 #define NOME_MAX_SENSOR 10
@@ -27,7 +28,28 @@ int main(int argc, char *argv[])
   int quant_sensores = argc - 3;
   if (quant_sensores > MAX_SENSORES)
   {
-    printf("Número máximo de sensores permitidos: %d.\n", MAX_SENSORES);
+    printf("Numero máximo de sensores permitidos: %d.\n", MAX_SENSORES);
+    return EXIT_FAILURE;
+  }
+
+  char data_hora_inicial[MAX_TEMPO], data_hora_final[MAX_TEMPO];
+  strncpy(data_hora_inicial, argv[1], MAX_TEMPO - 1);
+  data_hora_inicial[MAX_TEMPO - 1] = '\0';
+  strncpy(data_hora_final, argv[2], MAX_TEMPO - 1);
+  data_hora_final[MAX_TEMPO - 1] = '\0';
+
+  time_t ts_inicio = converter_para_timestamp(data_hora_inicial);
+  time_t ts_fim = converter_para_timestamp(data_hora_final);
+
+  if (ts_inicio == (time_t)0 || ts_fim == (time_t)0)
+  {
+    printf("Valores de data e hora invalidos. Formato valido: 2025-12-31T23:59:59\n");
+    return EXIT_FAILURE;
+  }
+
+  if (ts_inicio >= ts_fim)
+  {
+    printf("A data/hora inicial deve ser anterior a data/hora final.\n");
     return EXIT_FAILURE;
   }
 
@@ -45,15 +67,6 @@ int main(int argc, char *argv[])
     perror("Erro ao criar arquivo de saída");
     return EXIT_FAILURE;
   }
-
-  char hora_inicial[MAX_TEMPO], hora_final[MAX_TEMPO];
-  strncpy(hora_inicial, argv[1], MAX_TEMPO - 1);
-  hora_inicial[MAX_TEMPO - 1] = '\0';
-  strncpy(hora_final, argv[2], MAX_TEMPO - 1);
-  hora_final[MAX_TEMPO - 1] = '\0';
-
-  time_t ts_inicio = converter_para_timestamp(hora_inicial);
-  time_t ts_fim = converter_para_timestamp(hora_final);
 
   for (int i = 0; i < quant_sensores; i++)
   {
@@ -92,8 +105,22 @@ void separar_sensor_tipo(const char *entrada, char *sensor, char *tipo)
   strncpy(sensor, entrada, tamanho_sensor);
   sensor[tamanho_sensor] = '\0';
 
+  for (size_t i = 0; i < tamanho_sensor; i++)
+  {
+    if (!isupper(sensor[i]))
+    {
+      printf("Erro: O nome dos sensores deve conter somente letras maiusculas.\n");
+      exit(EXIT_FAILURE);
+    }
+  }
+
   strncpy(tipo, ponto + 1, NOME_MAX_TIPO - 1);
   tipo[NOME_MAX_TIPO - 1] = '\0';
+
+  if (!eh_tipo_valido(tipo))
+  {
+    exit(EXIT_FAILURE);
+  }
 }
 
 void imprimir_leitura(FILE *file, time_t timestamp, const char *sensor, const char *tipo, double valor)

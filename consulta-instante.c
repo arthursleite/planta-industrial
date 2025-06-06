@@ -28,8 +28,13 @@ int main(int argc, char *argv[])
 
   char nome_arquivo[20];
   snprintf(nome_arquivo, sizeof(nome_arquivo), "txt/%s.txt", sensor);
-  printf("Buscando no arquivo: %s\n", nome_arquivo);
   time_t ts_desejado = converter_para_timestamp(data_hora);
+
+  if (ts_desejado == (time_t)0)
+  {
+    printf("Valores de data e hora invalidos. Formato valido: 2025-12-31T23:59:59\n");
+    return EXIT_FAILURE;
+  }
 
   buscar_leitura(nome_arquivo, ts_desejado);
 }
@@ -39,7 +44,7 @@ int buscar_leitura(const char *nome_arquivo, long x)
   FILE *arquivo = fopen(nome_arquivo, "r");
   if (!arquivo)
   {
-    perror("Erro ao abrir o arquivo");
+    perror("Sensor inexistente ou arquivo vazio. Erro ao abrir o arquivo.");
     return EXIT_FAILURE;
   }
 
