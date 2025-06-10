@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  SensorData sensores[MAX_SENSORES];
+  static SensorData sensores[MAX_SENSORES];
   int total_sensores = 0;
 
   char linha[TAMANHO_MAX_LINHA];
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     char nome_sensor[NOME_MAX_SENSOR];
     char valor[30];
 
-    if (sscanf(linha, "%ld %s %s", &timestamp, nome_sensor, valor) != 3)
+    if (sscanf(linha, "%ld %s %s", &timestamp, nome_sensor, valor) != 3) //aqui
     {
       fprintf(stderr, "Linha ignorada (formato inválido): %s", linha);
       continue;

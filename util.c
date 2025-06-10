@@ -43,7 +43,7 @@ time_t gerar_timestamp_aleatorio(time_t timestamp_inicial, time_t timestamp_fina
   return timestamp_inicial + rand() % (timestamp_final - timestamp_inicial + 1);
 }
 
-double gerar_valor_aleatorio(const char *tipo)
+double gerar_valor_aleatorio(const char *tipo) //aqui
 {
   if (strcmp(tipo, "char") == 0)
   {
